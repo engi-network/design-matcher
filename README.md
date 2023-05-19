@@ -1,6 +1,17 @@
-# Getting Started with Create React App
+# Design Test
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a test jest plugin for comparing storybook stories with design images.
+
+## Demo
+
+```
+// Install dependencies
+npm install
+// Run storybook
+npm run storybook
+// Connect to existing storybook instance and run plugin script
+npm run plugin
+```
 
 ## Available Scripts
 
