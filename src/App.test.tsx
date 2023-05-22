@@ -9,6 +9,6 @@ const mockTest: StorybookTest = {
   design: "plugin/designs/primary-button.png",
 };
 
-test("should match design", () => {
-  expect(mockTest).toMatchDesign();
+test("should match design", async () => {
+  await expect(mockTest).toMatchDesign();
 });

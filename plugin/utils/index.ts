@@ -149,10 +149,15 @@ export async function takeScreenshot({
   const browser = await puppeteer.launch({ headless: "new" });
   const page = await browser.newPage();
   await page.setViewport({ width, height });
-  await page.goto(url, { waitUntil: "networkidle2" });
-  await page.screenshot({
-    path,
-    omitBackground: true,
-  });
+  try {
+    await page.goto(url, { waitUntil: "networkidle2" });
+    await page.screenshot({
+      path,
+      omitBackground: true,
+    });
+  } catch (e: any) {
+    await browser.close();
+    throw new Error(e.message);
+  }
   await browser.close();
 }

@@ -15,9 +15,9 @@ type Story = StoryObj<typeof meta>;
 export const Primary: Story = {
   args: {
     variant: "primary",
-    children: "BUTTON",
+    children: "Button",
     className:
-      "flex items-center justify-center w-[105px] h-[48px] font-['Helvetica_Neue']",
+      "flex items-center justify-center w-[105px] h-[48px] font-['Helvetica_Neue'] !bg-green-600",
   },
 };
 

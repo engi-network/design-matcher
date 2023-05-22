@@ -1,41 +1,47 @@
-import fs from "fs";
+import fs from "fs-extra";
 import path from "path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import { StorybookTest } from "./types";
 import { joinImages, loadImage, loadRawImage, takeScreenshot } from "./utils";
+require("dotenv").config();
 
-// const test: StorybookTest = {
-//   component: "Button",
-//   story: "Primary",
-//   args: {
-//     variant: "Primary",
-//   },
-//   design: "plugin/designs/primary-button.png",
-// };
+// If there are more than this percentage different pixels, fail the test
+const DIFF_THRESHOLD = 0.1;
+const TEMP_DIR = "temp";
 
 export async function toMatchDesign(test: StorybookTest): Promise<any> {
+  // ensure temp dir exists for photos
+  fs.ensureDirSync(TEMP_DIR);
+
   const ext = path.extname(test.design);
   const filename = path.basename(test.design, ext);
 
-  const storybookFilename = `temp/${filename}-storybook.png`;
-  const designFilename = `temp/${filename}-design.png`;
-  const diffFilename = `temp/${filename}-diff.png`;
-  const designImage = await loadImage(designFilename);
-  const { width, height } = designImage;
+  const storybookFilename = `${TEMP_DIR}/${filename}-storybook.png`;
+  const designFilename = `${TEMP_DIR}/${filename}-design.png`;
+  const diffFilename = `${TEMP_DIR}/${filename}-diff.png`;
+  const compFilename = `${TEMP_DIR}/${filename}-comp.png`;
 
+  // load dimensions from provided design file
+  const { width, height } = await loadImage(test.design);
+
+  const sbUrl = `http://localhost:${
+    process.env.STORYBOOK_PORT ?? 6006
+  }/iframe.html?id=${test.component.toLowerCase()}--${test.story.toLowerCase()}&viewMode=story`;
+
+  // take screenshot of storybook component
   await takeScreenshot({
-    url: "http://localhost:6006/iframe.html?args=&globals=backgrounds.value:!hex(333333)&id=button--primary&viewMode=story",
+    url: sbUrl,
     height,
     width,
     path: storybookFilename,
   });
 
+  // create diff image based on pixel diff
   const diff = new PNG({ width, height });
-
-  pixelmatch(
+  const pixelDiff = pixelmatch(
     (await loadRawImage(storybookFilename)).buffer,
-    (await loadRawImage(designFilename)).buffer,
+    (await loadRawImage(test.design)).buffer,
     diff.data,
     width,
     height,
@@ -43,25 +49,27 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
       threshold: 0.1,
     }
   );
-
   fs.writeFileSync(diffFilename, PNG.sync.write(diff));
 
+  // calculate diff percentage and pass/fail based on threshold
+  const pixelCount = width * height;
+  const pass = pixelDiff / pixelCount <= DIFF_THRESHOLD;
+
+  // join images to create a single comparison image
   const imageBuffer = await joinImages([
     storybookFilename,
-    designFilename,
+    test.design,
     diffFilename,
   ]);
 
+  // place all image files in same directory for debugging/viewing
   fs.copyFileSync(test.design, designFilename);
-  fs.writeFileSync(`temp/${filename}-comp.png`, imageBuffer);
-
-  // TODO: implement pass/fail based on threshold
-  const pass = true;
+  fs.writeFileSync(compFilename, imageBuffer);
 
   return {
     pass: pass,
     message: pass
-      ? "Expected test not to match design"
-      : "Expected test to match design",
+      ? () => `Expected ${test.story} not to match design. See ${compFilename}`
+      : () => `Expected ${test.story} to match design. See ${compFilename}`,
   };
 }
