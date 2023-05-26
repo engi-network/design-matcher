@@ -14,10 +14,14 @@ const LABEL_MARGIN_BOTTOM = 10;
 
 export async function joinImages(filenames: string[]): Promise<Buffer> {
   const storybookLabelImage = await loadImage(
-    "plugin/assets/label-storybook.png"
+    require.resolve("../assets/label-storybook.png")
   );
-  const designLabelImage = await loadImage("plugin/assets/label-design.png");
-  const diffLabelImage = await loadImage("plugin/assets/label-diff.png");
+  const designLabelImage = await loadImage(
+    require.resolve("../assets/label-design.png")
+  );
+  const diffLabelImage = await loadImage(
+    require.resolve("../assets/label-diff.png")
+  );
   const images = await Promise.all(filenames.map(loadImage));
   let totalWidth = PADDING_X * 2 + (images.length - 1) * HORIZONTAL_GAP;
   let totalHeight =
@@ -39,7 +43,7 @@ export async function joinImages(filenames: string[]): Promise<Buffer> {
     },
   });
 
-  const backgroundImage = await sharp("plugin/assets/bg.png")
+  const backgroundImage = await sharp(require.resolve("../assets/bg.png"))
     .resize({
       width: totalWidth,
       height: totalHeight,

@@ -10,6 +10,7 @@ const preview: Preview = {
         date: /Date$/,
       },
     },
+    // remove default padding around components
     layout: "fullscreen",
   },
 };

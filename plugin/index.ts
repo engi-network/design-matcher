@@ -6,9 +6,7 @@ import { StorybookTest } from "./types";
 import { joinImages, loadImage, loadRawImage, takeScreenshot } from "./utils";
 require("dotenv").config();
 
-// If there are more than this percentage different pixels, fail the test
-const DIFF_THRESHOLD = 0.1;
-const TEMP_DIR = "temp";
+const TEMP_DIR = process.env.DESIGN_TEMP_DIR ?? "temp";
 
 export async function toMatchDesign(test: StorybookTest): Promise<any> {
   // ensure temp dir exists for photos
@@ -53,7 +51,9 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
 
   // calculate diff percentage and pass/fail based on threshold
   const pixelCount = width * height;
-  const pass = pixelDiff / pixelCount <= DIFF_THRESHOLD;
+  const pass =
+    pixelDiff / pixelCount <=
+    parseFloat(process.env.DESIGN_DIFF_THRESHOLD ?? "0.05");
 
   // join images to create a single comparison image
   const imageBuffer = await joinImages([
