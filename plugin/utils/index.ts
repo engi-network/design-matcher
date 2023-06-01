@@ -165,3 +165,28 @@ export async function takeScreenshot({
   }
   await browser.close();
 }
+
+function hexToBinary(hex: string): string {
+  let binary = "";
+  for (let i = 0; i < hex.length; i++) {
+    binary += ("0000" + parseInt(hex[i], 16).toString(2)).substr(-4);
+  }
+  return binary;
+}
+
+export function hammingDistance(hash1: string, hash2: string): number {
+  if (hash1.length !== hash2.length) {
+    throw new Error("Hashes must be of equal length");
+  }
+
+  let distance = 0;
+  const binaryHash1 = hexToBinary(hash1);
+  const binaryHash2 = hexToBinary(hash2);
+
+  for (let i = 0; i < binaryHash1.length; i++) {
+    if (binaryHash1[i] !== binaryHash2[i]) {
+      distance++;
+    }
+  }
+  return distance;
+}

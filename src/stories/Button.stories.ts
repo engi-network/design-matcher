@@ -17,7 +17,7 @@ export const Primary: Story = {
     variant: "primary",
     children: "Button",
     className:
-      "flex items-center justify-center w-[105px] h-[48px] font-['Helvetica_Neue'] !bg-green-600",
+      "flex items-center justify-center w-[105px] h-[48px] font-['Helvetica_Neue']",
   },
 };
 
