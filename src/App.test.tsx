@@ -6,7 +6,7 @@ const mockTest: StorybookTest = {
   args: {
     variant: "Primary",
   },
-  design: "plugin/designs/primary-button.png",
+  design: "designs/button--primary.png",
 };
 
 test("should match design", async () => {

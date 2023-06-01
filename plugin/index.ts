@@ -40,8 +40,11 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
   const diffFilename = `${TEMP_DIR}/${filename}-diff.png`;
   const compFilename = `${TEMP_DIR}/${filename}-comp.png`;
 
+  // copy the original design (we'll read from the copy)
+  fs.copyFileSync(test.design, designFilename);
+
   // load dimensions from provided design file
-  const { width, height } = await loadImage(test.design);
+  const { width, height } = await loadImage(designFilename);
 
   const sbUrl = `http://localhost:${
     process.env.STORYBOOK_PORT ?? 6006
@@ -59,7 +62,7 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
   const diff = new PNG({ width, height });
   pixelmatch(
     (await loadRawImage(storybookFilename)).buffer,
-    (await loadRawImage(test.design)).buffer,
+    (await loadRawImage(designFilename)).buffer,
     diff.data,
     width,
     height,
@@ -83,12 +86,9 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
   // join images to create a single comparison image
   const imageBuffer = await joinImages([
     storybookFilename,
-    test.design,
+    designFilename,
     diffFilename,
   ]);
-
-  // place all image files in same directory for debugging/viewing
-  fs.copyFileSync(test.design, designFilename);
   fs.writeFileSync(compFilename, imageBuffer);
 
   return {
