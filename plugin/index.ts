@@ -2,11 +2,31 @@ import fs from "fs-extra";
 import path from "path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
+import { imageHash } from "image-hash";
 import { StorybookTest } from "./types";
-import { joinImages, loadImage, loadRawImage, takeScreenshot } from "./utils";
+import {
+  hammingDistance,
+  joinImages,
+  loadImage,
+  loadRawImage,
+  takeScreenshot,
+} from "./utils";
+
 require("dotenv").config();
 
 const TEMP_DIR = process.env.DESIGN_TEMP_DIR ?? "temp";
+
+export async function getImageHash(img: Buffer): Promise<string> {
+  return new Promise((resolve, reject) =>
+    imageHash({ data: img }, 16, true, (err: any, data: string) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(data);
+    })
+  );
+}
 
 export async function toMatchDesign(test: StorybookTest): Promise<any> {
   // ensure temp dir exists for photos
@@ -37,7 +57,7 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
 
   // create diff image based on pixel diff
   const diff = new PNG({ width, height });
-  const pixelDiff = pixelmatch(
+  pixelmatch(
     (await loadRawImage(storybookFilename)).buffer,
     (await loadRawImage(test.design)).buffer,
     diff.data,
@@ -49,11 +69,16 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
   );
   fs.writeFileSync(diffFilename, PNG.sync.write(diff));
 
+  // get 16-bit image perceptual hash
+  const hash1 = await getImageHash((await loadImage(storybookFilename)).buffer);
+  const hash2 = await getImageHash((await loadImage(designFilename)).buffer);
+
   // calculate diff percentage and pass/fail based on threshold
-  const pixelCount = width * height;
+  // distance is calculated it base 2, meaning 16 bit hex is 256 bits in binary
+  const distance = hammingDistance(hash1, hash2);
+  const diffPercentage = distance / 256;
   const pass =
-    pixelDiff / pixelCount <=
-    parseFloat(process.env.DESIGN_DIFF_THRESHOLD ?? "0.05");
+    diffPercentage <= parseFloat(process.env.DESIGN_DIFF_THRESHOLD ?? "0.05");
 
   // join images to create a single comparison image
   const imageBuffer = await joinImages([
@@ -69,7 +94,17 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
   return {
     pass: pass,
     message: pass
-      ? () => `Expected ${test.story} not to match design. See ${compFilename}`
-      : () => `Expected ${test.story} to match design. See ${compFilename}`,
+      ? () =>
+          `Expected ${
+            test.story
+          } not to match design. See ${compFilename}. There is a ${(
+            diffPercentage * 100
+          ).toFixed(2)}% difference.`
+      : () =>
+          `Expected ${
+            test.story
+          } to match design. See ${compFilename}. There is a ${(
+            diffPercentage * 100
+          ).toFixed(2)}% difference.`,
   };
 }

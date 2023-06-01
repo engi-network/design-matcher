@@ -1,7 +1,6 @@
 {
   "name": "@engi.network/design-matcher",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.1",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -13,6 +12,7 @@
     "classnames": "^2.3.2",
     "dotenv": "^16.0.3",
     "fs-extra": "^11.1.1",
+    "image-hash": "^5.3.1",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
     "puppeteer": "^20.2.1",
