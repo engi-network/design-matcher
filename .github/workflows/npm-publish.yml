@@ -15,8 +15,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm ci
-      - run: npm run storybook
+      - run: npm ci --include=dev
+      - run: npm run storybook-daemon
       - run: npm test
 
   publish-npm:
