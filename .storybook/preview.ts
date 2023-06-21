@@ -10,6 +10,15 @@ const preview: Preview = {
         date: /Date$/,
       },
     },
+    backgrounds: {
+      default: "dark",
+      values: [
+        {
+          name: "dark",
+          value: "#000",
+        },
+      ],
+    },
     // remove default padding around components
     layout: "fullscreen",
   },

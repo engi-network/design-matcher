@@ -3,7 +3,7 @@ import path from "path";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
 import { imageHash } from "image-hash";
-import { StorybookTest } from "./types";
+import { DesignMatcherOptions, StorybookTest } from "./types";
 import {
   hammingDistance,
   joinImages,
@@ -28,7 +28,10 @@ export async function getImageHash(img: Buffer): Promise<string> {
   );
 }
 
-export async function toMatchDesign(test: StorybookTest): Promise<any> {
+export async function toMatchDesign(
+  test: StorybookTest,
+  options?: DesignMatcherOptions
+): Promise<any> {
   // ensure temp dir exists for photos
   fs.ensureDirSync(TEMP_DIR);
 
@@ -48,7 +51,11 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
 
   const sbUrl = `http://localhost:${
     process.env.STORYBOOK_PORT ?? 6006
-  }/iframe.html?id=${test.component.toLowerCase()}--${test.story.toLowerCase()}&viewMode=story`;
+  }/iframe.html?id=${test.component
+    .toLowerCase()
+    .replace(" ", "-")}--${test.story
+    .toLowerCase()
+    .replace(" ", "-")}&viewMode=story`;
 
   // take screenshot of storybook component
   await takeScreenshot({
@@ -62,7 +69,7 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
   const diff = new PNG({ width, height });
   pixelmatch(
     (await loadRawImage(storybookFilename)).buffer,
-    (await loadRawImage(designFilename)).buffer,
+    (await loadRawImage(designFilename, options?.background)).buffer,
     diff.data,
     width,
     height,
@@ -99,12 +106,12 @@ export async function toMatchDesign(test: StorybookTest): Promise<any> {
             test.story
           } not to match design. See ${compFilename}. There is a ${(
             diffPercentage * 100
-          ).toFixed(2)}% difference.`
+          ).toFixed(2)}% difference.\n${sbUrl}`
       : () =>
           `Expected ${
             test.story
           } to match design. See ${compFilename}. There is a ${(
             diffPercentage * 100
-          ).toFixed(2)}% difference.`,
+          ).toFixed(2)}% difference.\n${sbUrl}`,
   };
 }

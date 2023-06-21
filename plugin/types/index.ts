@@ -4,3 +4,7 @@ export type StorybookTest = {
   args?: Record<string, any>;
   design: string;
 };
+
+export type DesignMatcherOptions = {
+  background?: string;
+};

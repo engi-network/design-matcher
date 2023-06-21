@@ -1,8 +1,9 @@
+import { DesignMatcherOptions } from ".";
 /* eslint-disable @typescript-eslint/no-empty-interface */
 export {};
 
 interface CustomMatchers<R = unknown> {
-  toMatchDesign(): R;
+  toMatchDesign(options?: DesignMatcherOptions): R;
 }
 
 declare global {
