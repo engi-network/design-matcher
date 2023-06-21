@@ -78,8 +78,11 @@ export async function loadImage(filename: string): Promise<ImageData> {
   };
 }
 
-export async function loadRawImage(filename: string): Promise<ImageData> {
-  const image = await sharp(filename);
+export async function loadRawImage(filename: string, background?: string): Promise<ImageData> {
+  let image = await sharp(filename);
+  if (background) {
+    image.flatten({ background });
+  }
   const { width = 200, height = 200 } = await image.metadata();
 
   return {

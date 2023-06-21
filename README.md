@@ -93,6 +93,11 @@ This is a test jest plugin for comparing storybook stories with design images.
    test("should match design", async () => {
      await expect(mockTest).toMatchDesign();
    });
+
+   // Optionally, specify a background color for the design image if it is transparent
+   test("should match design", async () => {
+     await expect(mockTest).toMatchDesign({ backgroud: '#000000' });
+   });
    ```
 
 9. Run `npm test`.
