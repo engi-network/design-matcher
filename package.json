@@ -1,6 +1,6 @@
 {
   "name": "@engi.network/design-matcher",
-  "version": "0.1.6",
+  "version": "1.1.7",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
