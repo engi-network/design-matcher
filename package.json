@@ -1,9 +1,14 @@
 {
   "name": "@engi.network/design-matcher",
-  "version": "1.1.11",
+  "version": "1.1.12",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "@types/fs-extra": "^11.0.1",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.5.3",
     "@types/node": "^16.18.31",
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",
@@ -18,11 +23,10 @@
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1"
   },
-  "scripts": {
-    "test": "jest"
+  "devDependencies": {
+    "typescript": "^5.1.6"
   },
   "description": "This is a jest plugin for comparing storybook stories with design images.",
-  "main": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/engi-network/design-matcher.git"
