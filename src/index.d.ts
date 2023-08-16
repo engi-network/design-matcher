@@ -1,6 +1,4 @@
-import { DesignMatcherOptions } from ".";
-/* eslint-disable @typescript-eslint/no-empty-interface */
-export {};
+import { DesignMatcherOptions } from "./types/index";
 
 interface CustomMatchers<R = unknown> {
   toMatchDesign(options?: DesignMatcherOptions): R;
@@ -13,3 +11,5 @@ declare global {
     interface InverseAsymmetricMatchers extends CustomMatchers {}
   }
 }
+
+export * from "./types/index";

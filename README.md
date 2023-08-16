@@ -22,7 +22,7 @@ This is a jest plugin for comparing storybook stories with design images.
    },
    ```
 
-3. Add the jest declaration file to `files` in `tsconfig.json`.
+3. Add the type declarations file to `files` in `tsconfig.json`.
 
    ```json
    {
@@ -31,7 +31,7 @@ This is a jest plugin for comparing storybook stories with design images.
      },
      "exclude": ["node_modules"],
      "files": [
-       "node_modules/@engi.network/design-matcher/plugin/types/jest.d.ts"
+       "node_modules/@engi.network/design-matcher/src/index.d.ts"
      ]
    }
    ```

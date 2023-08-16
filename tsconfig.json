@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",               // Target ES2019 (Node.js 12+), but adjust based on the Node.js version you're targeting
+    "module": "commonjs",            // Use CommonJS modules for Node.js
+    "outDir": "./dist",              // Directory for compiled JavaScript files
+    "rootDir": "./src",              // Root directory for your TypeScript files
+    "strict": true,                  // Enable strict type-checking options
+    "esModuleInterop": true,         // Enables ES6 module interop, allowing default imports from non-ES6 modules
+    "skipLibCheck": false,            // Skip type-checking declaration files
+    "forceConsistentCasingInFileNames": true,  // Disallow inconsistently-cased references to the same file
+    "resolveJsonModule": true,       // Allow importing JSON modules
+    "moduleResolution": "node",      // Use Node.js style module resolution
+    "removeComments": true,          // Remove comments in the produced JavaScript files
+    "noUnusedLocals": true,          // Report errors on unused local variables
+    "noUnusedParameters": true,      // Report errors on unused function parameters
+    "noImplicitReturns": true,       // Report error when not all code paths in function return a value
+    "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statements
+    "declaration": true // TypeScript will generate the .d.ts files when you compile your TypeScript files
+  },
+  "include": [
+    "src/**/*.ts"                    // Source files to be compiled
+  ],
+  "exclude": [
+    "node_modules",                  // Exclude node_modules from being compiled
+    "**/*.test.ts",                 // Exclude test files from your output directory
+    "**/*.spec.ts"
+  ]
+}
