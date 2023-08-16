@@ -155,6 +155,11 @@ export async function takeScreenshot({
 }) {
   const browser = await puppeteer.launch({ headless: "new" });
   const page = await browser.newPage();
+  if (process.env.STORYBOOK_PREFERS_DARK) {
+    await page.emulateMediaFeatures([
+      {name: 'prefers-color-scheme', value: 'dark'},
+    ]);
+  }
   await page.setViewport({ width, height });
   try {
     await page.goto(url, { waitUntil: "networkidle2" });
