@@ -49,17 +49,25 @@ export async function toMatchDesign(
   // load dimensions from provided design file
   const { width, height } = await loadImage(designFilename);
 
-  const sbUrl = `http://localhost:${
-    process.env.STORYBOOK_PORT ?? 6006
-  }/iframe.html?id=${test.component
-    .toLowerCase()
-    .replace(" ", "-")}--${test.story
-    .toLowerCase()
-    .replace(" ", "-")}&viewMode=story`;
+  const storyId =  test.component.toLowerCase().replace(" ", "-") +
+    '--' +
+    test.story.toLowerCase().replace(" ", "-")
+   
+  const sbUrl = new URL(
+    (process.env.STORYBOOK_SCHEME || 'http') +
+    '://' +
+    (process.env.STORYBOOK_HOSTNAME || 'localhost') +
+    ':' +
+    (process.env.STORYBOOK_PORT || '6006')
+  )
+
+  sbUrl.pathname = 'iframe.html'
+  sbUrl.searchParams.append('viewMode', 'story')
+  sbUrl.searchParams.append('id', storyId)
 
   // take screenshot of storybook component
   await takeScreenshot({
-    url: sbUrl,
+    url: sbUrl.toString(),
     height,
     width,
     path: storybookFilename,
@@ -106,12 +114,12 @@ export async function toMatchDesign(
             test.story
           } not to match design. See ${compFilename}. There is a ${(
             diffPercentage * 100
-          ).toFixed(2)}% difference.\n${sbUrl}`
+          ).toFixed(2)}% difference.\n${sbUrl.toString()}`
       : () =>
           `Expected ${
             test.story
           } to match design. See ${compFilename}. There is a ${(
             diffPercentage * 100
-          ).toFixed(2)}% difference.\n${sbUrl}`,
+          ).toFixed(2)}% difference.\n${sbUrl.toString()}`,
   };
 }
