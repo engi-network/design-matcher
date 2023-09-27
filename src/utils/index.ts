@@ -78,7 +78,10 @@ export async function loadImage(filename: string): Promise<ImageData> {
   };
 }
 
-export async function loadRawImage(filename: string, background?: string): Promise<ImageData> {
+export async function loadRawImage(
+  filename: string,
+  background?: string
+): Promise<ImageData> {
   let image = await sharp(filename);
   if (background) {
     image.flatten({ background });
@@ -153,11 +156,13 @@ export async function takeScreenshot({
   height: number;
   path: string;
 }) {
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
   if (process.env.STORYBOOK_PREFERS_DARK) {
     await page.emulateMediaFeatures([
-      {name: 'prefers-color-scheme', value: 'dark'},
+      { name: "prefers-color-scheme", value: "dark" },
     ]);
   }
   await page.setViewport({ width, height });
